@@ -16,8 +16,6 @@ public class DialogueManager : MonoBehaviour {
 	void Start () {
 		sentences = new Queue<string>();
 		animator.SetBool("IsOpen",  false);
-
-
 	}
 
 	public void StartDialogue (Dialogue dialogue)
@@ -34,7 +32,6 @@ public class DialogueManager : MonoBehaviour {
 		{
 			sentences.Enqueue(sentence);
 			nameText.text = sentence;
-
 		}
 
 		 DisplayNextSentence();
@@ -42,32 +39,37 @@ public class DialogueManager : MonoBehaviour {
 
 	public void DisplayNextSentence ()
 	{
+		
+		Debug.Log("In displayNext Sentence");
+ 
 		if (sentences.Count == 0)
 		{
 			EndDialogue();
 			return;
 		}
-
-		string sentence = sentences.Dequeue();
+		
+		Debug.Log("Trying");
+		while(sentences.Count > 0) {
+			var sentence = sentences.Dequeue();
+			StartCoroutine(TypeSentence(sentence));
+		}
 		StopAllCoroutines();
-		StartCoroutine(TypeSentence(sentence));
 	}
+
 
 	IEnumerator TypeSentence (string sentence)
 	{
+		yield return new WaitForSeconds(15f);
+		Debug.Log("In type Sentence");
+		Debug.Log(sentence);
 		nameText.text = sentence;
-		yield return null;
-		// foreach (char letter in sentence.ToCharArray())
-		// {
-		// 	nameText.text += letter;
-		// 	yield return null;
-		// }
 	}
 
 	public void EndDialogue()
 	{
 		nameText.text = "";
 		sentences.Clear();
+		StopAllCoroutines();
 		animator.SetBool("IsOpen", false);
 	}
 
