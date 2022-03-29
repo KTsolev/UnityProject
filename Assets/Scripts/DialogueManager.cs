@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class DialogueManager : MonoBehaviour {
 
 	public Text nameText;
+	public Text dialogueText;
+
+	public Button goNext;
 
 	public Animator animator;
 
@@ -15,61 +17,57 @@ public class DialogueManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		sentences = new Queue<string>();
-		animator.SetBool("IsOpen",  false);
+		goNext.onClick.AddListener(DisplayNextSentence);
+	}
+
+	void OnDestroy() {
+		goNext.onClick.RemoveListener(DisplayNextSentence);	
 	}
 
 	public void StartDialogue (Dialogue dialogue)
 	{
-		Debug.Log(nameText);
-		Debug.Log(dialogue.name);
+		animator.SetBool("IsOpen", true);
 
-		nameText.name = dialogue.name;
-		
-		animator.SetBool("IsOpen",  true);
+		nameText.text = dialogue.name;
+
 		sentences.Clear();
 
 		foreach (string sentence in dialogue.sentences)
 		{
 			sentences.Enqueue(sentence);
-			nameText.text = sentence;
 		}
 
-		 DisplayNextSentence();
+		DisplayNextSentence();
 	}
 
 	public void DisplayNextSentence ()
 	{
-		
-		Debug.Log("In displayNext Sentence");
- 
+		Debug.Log("Clicked Event");
 		if (sentences.Count == 0)
 		{
 			EndDialogue();
 			return;
 		}
-		
-		Debug.Log("Trying");
-		while(sentences.Count > 0) {
-			var sentence = sentences.Dequeue();
-			StartCoroutine(TypeSentence(sentence));
-		}
-		StopAllCoroutines();
-	}
 
+		string sentence = sentences.Dequeue();
+		dialogueText.text += sentence;
+	}
 
 	IEnumerator TypeSentence (string sentence)
 	{
-		yield return new WaitForSeconds(15f);
-		Debug.Log("In type Sentence");
-		Debug.Log(sentence);
-		nameText.text = sentence;
+		dialogueText.text = "";
+		foreach (char letter in sentence.ToCharArray())
+		{
+			dialogueText.text += letter;
+			yield return null;
+		}
 	}
 
 	public void EndDialogue()
 	{
-		nameText.text = "";
 		sentences.Clear();
-		StopAllCoroutines();
+		dialogueText.text = "";
+		nameText.text = "";
 		animator.SetBool("IsOpen", false);
 	}
 

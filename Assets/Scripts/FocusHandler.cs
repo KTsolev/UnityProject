@@ -6,77 +6,72 @@ using UnityEngine.EventSystems;
 
 public class FocusHandler : MonoBehaviour
 {
-    public delegate void OnFocusChanged(Interactable newFocus);
-	public OnFocusChanged onFocusChangedCallback;
-
+	public dynamic currentGODefaultColor;
 	public Interactable focus;	// Our current focus: Item, Enemy etc.
 
 	//public LayerMask movementMask;		// The ground
-	public LayerMask interactionMask;	// Everything we can interact with
-
-	DroneMovement1 movement;		// Reference to our motor
+	public LayerMask interactionMask;
+			// Reference to our motor
 	Camera cam;
 
-    void Start()
-    {
-        movement = GetComponent<DroneMovement1>();
+    // void Start()
+    // {
+    //     movement = GetComponent<DroneMovement1>();
 	
-        cam = Camera.main;
-    }
+    //     cam = Camera.main;
+    // }
 
-    void Update()
-    {
-        /*Debug.Log("Cam");
+    // void FixedUpdate()
+    // {
 
-        Debug.Log(cam);
-        Debug.Log("EventSystem");
-        Debug.Log(EventSystem.current);*/
+    //     if (EventSystem.current.IsPointerOverGameObject())
+	// 		return;
+    //     movement?.Moving(true);
+    //     GetFocus();
+    //     GoToFocus();
+    // }
 
-        if (EventSystem.current.IsPointerOverGameObject())
-			return;
-        
-        GetFocus();
-        GoToFocus();
-    }
+    // void SetFocus(Interactable newFocus){
+	// 	if (onFocusChangedCallback != null)
+	// 		onFocusChangedCallback.Invoke(newFocus);
 
-    void SetFocus(Interactable newFocus){
-		if (onFocusChangedCallback != null)
-			onFocusChangedCallback.Invoke(newFocus);
+    //         //  currentGODefaultColor =  newFocus.renderer.material.color;
+    //         //  newFocus.renderer.material.color = Color.yellow;
 
-		// If our focus has changed
-		if (focus != newFocus && focus != null)
-		{
-			// Let our previous focus know that it's no longer being focused
-			focus.OnDefocused();
-		}
+	// 	// If our focus has changed
+	// 	if (focus != newFocus)
+	// 	{
+    //      //    newFocus.renderer.material.color = currentGODefaultColor;
+	// 		// Let our previous focus know that it's no longer being focused
+	// 		focus?.OnDefocused();
+	// 	}
 
-		// Set our focus to what we hit
-		// If it's not an interactable, simply set it to null
-		focus = newFocus;
+	// 	if (focus != null)
+	// 	{
+	// 		// Let our focus know that it's being focused
+	// 		focus.OnFocused(transform);
+	// 	}
+	// 	// Set our focus to what we hit
+	// 	// If it's not an interactable, simply set it to null
+	// 	focus = newFocus;
 
-		if (focus != null)
-		{
-			// Let our focus know that it's being focused
-			focus.OnFocused(transform);
-		}
+	// }
+	
+    // void GetFocus(){
+    //     Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+    //     RaycastHit hit;
+	// 	if (Physics.Raycast(ray, out hit, interactionMask)){
+	// 		//movement.move(hit.point);
+    //         SetFocus(null);
+	// 	}
+    // }
 
-	}
+    // void GoToFocus(){
+    //     Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+    //     RaycastHit hit;
 
-    void GetFocus(){
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-		if (Physics.Raycast(ray, out hit, interactionMask)){
-			//movement.move(hit.point);
-            SetFocus(null);
-		}
-    }
-
-    void GoToFocus(){
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-		if (Physics.Raycast(ray, out hit, 100f, interactionMask)){
-            SetFocus(hit.collider.GetComponent<Interactable>());
-		}
-    }
+	// 	if (Physics.Raycast(ray, out hit, 100f, interactionMask)){
+    //         SetFocus(hit.collider.GetComponent<Interactable>());
+	// 	}
+    // }
 }

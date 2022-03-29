@@ -4,61 +4,75 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-[RequireComponent(typeof(FocusHandler))]
 public class DroneMovement1 : MonoBehaviour
 {
     public Rigidbody rb;
     Transform target;
     NavMeshAgent agent;
 
-    void Start(){
+    Interactable interactable;
+
+    void Start() {
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
-        GetComponent<FocusHandler>().onFocusChangedCallback += OnFocusChanged;
     }
 
-    // Update is called once per frame
-    void Update()
+    void Update() {
+        Moving(true);
+    }
+
+
+    public void Moving(bool shouldMove) {
+        if (shouldMove) {
+            //if(OVRInput.Get(OVRInput.Button.PrimaryThumbstickRight)){
+            if(Input.GetKey("d")){
+                rb.AddForce(500 * Time.deltaTime, 0, 0);
+            }
+
+            //if(OVRInput.Get(OVRInput.Button.PrimaryThumbstickLeft)){
+            if(Input.GetKey("a")){
+                rb.AddForce(-500 * Time.deltaTime, 0, 0);
+            }
+
+            //if(OVRInput.Get(OVRInput.Button.PrimaryThumbstickUp)){
+            if(Input.GetKey("w")){
+                rb.AddForce(0, 0, 500 * Time.deltaTime);
+            }
+
+            //if(OVRInput.Get(OVRInput.Button.PrimaryThumbstickDown)){
+            if(Input.GetKey("s")){
+                rb.AddForce(0, 0, -500 * Time.deltaTime);
+            }
+
+        }
+    }
+
+    
+    private void OnTriggerStay(Collider other)
     {
-        //if(OVRInput.Get(OVRInput.Button.PrimaryThumbstickRight)){
-        if(Input.GetKey("d")){
-            rb.AddForce(500 * Time.deltaTime, 0, 0);
-        }
-
-        //if(OVRInput.Get(OVRInput.Button.PrimaryThumbstickLeft)){
-        if(Input.GetKey("a")){
-            rb.AddForce(-500 * Time.deltaTime, 0, 0);
-        }
-
-        //if(OVRInput.Get(OVRInput.Button.PrimaryThumbstickUp)){
-        if(Input.GetKey("w")){
-            rb.AddForce(0, 0, 500 * Time.deltaTime);
-        }
-
-        //if(OVRInput.Get(OVRInput.Button.PrimaryThumbstickDown)){
-        if(Input.GetKey("s")){
-            rb.AddForce(0, 0, -500 * Time.deltaTime);
+        Debug.Log("coliding:" + other);
+        if (other != null) {
+            interactable = other.GetComponentInParent<Interactable>();
+            Debug.Log("interactable:" + interactable);
+            EventSystem.current.DialogueTrigerEnter(interactable.Id);
+            if(Input.GetKey("e")){
+                EventSystem.current.DialogueInteracted(interactable.Id); 
+            }
         }
     }
 
+    
+    private void OnTriggerExit(Collider other)
+    {
 
-    void OnFocusChanged(Interactable newFocus){
-		if (newFocus != null){
-			agent.stoppingDistance = newFocus.radius*.8f;
-			agent.updateRotation = false;
-			target = newFocus.interactionTransform;
+        if (other != null) {
+            interactable = other.GetComponentInParent<Interactable>();
+            Debug.Log("uncoliding:" + other);
+            EventSystem.current.DialogueTrigerExit(interactable.Id);
+        }
+        interactable = null;
+        
+    }
 
-		} else{
-			agent.stoppingDistance = 0f;
-			agent.updateRotation = true;
-			target = null;
-		}
-	}
-
-    void FaceTarget(){
-		Vector3 direction = (target.position - transform.position).normalized;
-		Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-		transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
-	}
 }
